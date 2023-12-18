@@ -37,7 +37,7 @@ const tempWatchedData = [
   },
   {
     imdbID: "tt0088763",
-    Title: "Back to the Future",
+    Title: " Back to the Future",
     Year: "1985",
     Poster:
       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
@@ -52,32 +52,21 @@ const average = (arr) =>
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  //now in this we are using component composition here
   return (
     <>
-      <NavBar>
-        <Logo />
-        <Search />
-        <NumResults movies={movies} />
-      </NavBar>
-      <Main>
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
-        <Box>
-          <>
-            <WatchedSummary watched={watched} />
-            <WatchedMovieList watched={watched} />
-          </>
-        </Box>
-      </Main>
+      <NavBar movies={movies} />
+      <Main movies={movies} />
     </>
   );
 }
-function NavBar({ children }) {
-  return <nav className="nav-bar">{children}</nav>;
+function NavBar({ movies }) {
+  return (
+    <nav className="nav-bar">
+      <Logo />
+      <Search />
+      <NumResults movies={movies} />
+    </nav>
+  );
 }
 function Logo() {
   return (
@@ -107,42 +96,28 @@ function NumResults({ movies }) {
     </p>
   );
 }
-function Main({ children }) {
-  return <main className="main">{children}</main>;
-}
-function Box({ children }) {
-  const [isOpen, setIsOpen] = useState(true);
+function Main({ movies }) {
   return (
-    <div className="box">
-      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? "–" : "+"}
-      </button>
-      {isOpen && children}
-    </div>
+    <main className="main">
+      <ListBox movies={movies} />
+      <WatchedBox />
+    </main>
   );
 }
-/*function WatchedBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  const [isOpen2, setIsOpen2] = useState(true);
-
+function ListBox({ movies }) {
+  const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
       <button
         className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
+        onClick={() => setIsOpen1((open) => !open)}
       >
-        {isOpen2 ? "–" : "+"}
+        {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
-        </>
-      )}
+      {isOpen1 && <MovieList movies={movies} />}
     </div>
   );
-}*/
+}
 function MovieList({ movies }) {
   return (
     <ul className="list">
@@ -166,7 +141,28 @@ function Movie({ movie }) {
     </li>
   );
 }
+function WatchedBox() {
+  const [watched, setWatched] = useState(tempWatchedData);
 
+  const [isOpen2, setIsOpen2] = useState(true);
+
+  return (
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen2((open) => !open)}
+      >
+        {isOpen2 ? "–" : "+"}
+      </button>
+      {isOpen2 && (
+        <>
+          <WatchedSummary watched={watched} />
+          <WatchedMovieList watched={watched} />
+        </>
+      )}
+    </div>
+  );
+}
 function WatchedSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
