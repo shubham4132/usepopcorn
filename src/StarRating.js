@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Proptypes from "prop-types";
 
 const containerStyle = {
   display: "flex",
@@ -11,6 +12,14 @@ const starContainerStyle = {
 
 //here we set a defualt value for the rating by leveraging the power of destructuring in js maxrating=5
 //whenever we destructure a object then we can actually set a default value
+StarRating.propTypes = {
+  maxRating: Proptypes.number,
+  defaultRating: Proptypes.number,
+  color: Proptypes.string,
+  size: Proptypes.number,
+  messages: Proptypes.array,
+  onSetRating: Proptypes.func,
+};
 export default function StarRating({
   maxRating = 5,
   color = "#fcc419",
