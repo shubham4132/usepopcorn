@@ -51,49 +51,73 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "50a82fb";
 export default function App() {
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "bhjvjgvhvj";
+  const tempQuery = "interstellar ";
 
   // useEffect(function () {
   //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //     .then((res) => res.json())
   //     .then((data) => setMovies(data.Search));
   // }, []);
-
+  /*
   useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
-        if (!res.ok)
-          throw new Error("Something went wrong with fetching movies");
-
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
-        setMovies(data.Search);
-        console.log(data);
-      } catch (err) {
-        console.error(err.message);
-        console.log(err.message);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchMovies();
+    console.log("After initial render");
   }, []);
+  useEffect(function () {
+    console.log("After every render");
+  });
+  useEffect(
+    function () {
+      console.log("D");
+    },
+    [query]
+  );
+  console.log("During render");
+*/
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError("");
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+          if (!res.ok)
+            throw new Error("Something went wrong with fetching movies");
+
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found");
+          setMovies(data.Search);
+          console.log(data);
+        } catch (err) {
+          console.error(err.message);
+          console.log(err.message);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+      fetchMovies();
+    },
+    [query]
+  );
 
   //now in this we are using component composition here
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
       <Main>
@@ -130,7 +154,8 @@ function Loader() {
 function ErrorMessage({ message }) {
   return (
     <p className="error">
-      <span>{message}</span>
+      <span>⛔</span>
+      {message}
     </p>
   );
 }
@@ -146,8 +171,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
