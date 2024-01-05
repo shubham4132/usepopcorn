@@ -14,8 +14,9 @@ export default function App() {
   // const [watched, setWatched] = useState([]);
   const [watched, setWatched] = useState(function () {
     const storeValue = localStorage.getItem("watched");
-    return JSON.parse(storeValue);
+    return JSON.parse(storeValue) || [];
   });
+
   // useEffect(function () {
   //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //     .then((res) => res.json())
